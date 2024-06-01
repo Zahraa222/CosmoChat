@@ -24,7 +24,7 @@ const Chat = () => {
     const openai = new OpenAI({apiKey: API_KEY, dangerouslyAllowBrowser: true});
     const matches = useMediaQuery("(max-width: 600px)");
     let chatKeys = [];
-}
+
 
 useEffect(() => {
     const fetchSession = async () => {
@@ -93,8 +93,59 @@ const handleSubmit = async (e) => {
         catch(err){
             console.log(`error: ${err.message}`);
         }
+    }, 5000);
+};
 
-    })};
+async function callOpenAIAPI() {
+    const completion = await openai.completions.create({
+        messages: [
+            {
+            role: "system",
+            content: "Your name is Zarco. You are a skin care assistant. You give advice to customers on the best skin care products to use based on their skin type."
+            },
+        ],
+        model: "gpt-3.5-turbo",
+        max_tokens: 100,
+    });
+    setRexReply(completion.data.choices[0].message.content);
+}
+
+return (
+    <Grid container style={{ display: matches ? "none" : "block" }}>
+        <Grid style={{ padding: "40px 24px 24px 24px", position: "sticky" }}>
+            <img src={Images.homeRex} alt="Rex" style={{ width: "105px" }}/>
+        </Grid>
+        <Grid {...ChatStyles.textDisplayBackground}>
+            <Grid>
+                {thisSession?.chats?.length ? thisSession.chats.map((chat, i) =>
+                    Object.keys(chat).map((k) =>
+                        k === "Rex" ? (
+                            <RexMessage RexMessage={chat.ReX} key={'rex' + i}/>
+                        ) : (
+                            <UserMessage userMessage={chat.user} key={'user' + i}/>
+                        )
+                    )
+                ) : null}
+            </Grid>
+            {thisSession && !thisSession.isSessionEnded && (
+                <Grid {...ChatStyles.toSendArea}>
+                    <Textarea
+                        {...ChatStyles.textArea}
+                        name="Soft"
+                        placeholder="Type a message to Zarco"
+                        variant="soft"
+                        onChange={(e) => setUserPrompt(e.target.value)}
+                        value={userPrompt}
+                    />
+                    <Button onClick={handleSubmit} style={{ margin: "20px 0" }}>Send</Button>
+                </Grid>
+            )}
+        </Grid>
+    </Grid>
+);
+}
+
+export default Chat;
 
 
-export default App;
+
