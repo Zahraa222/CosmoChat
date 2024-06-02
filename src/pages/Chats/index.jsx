@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import api from "../../api/sessions";
 import ChatStyles from "../../styles/chat";
 import Images from "../../constants/images";
-import RexMessage from "../../components/RexMessage";
+import ZarcoMessage from "../../components/ZarcoMessage";
 import UserMessage from "../../components/UserMessage";
 import OpenAI from "openai";
 import { Button, Grid } from "@mui/material";
@@ -16,7 +16,7 @@ import useMediaQuery from "@mui/material";
 const Chat = () => {
     const { id } = useParams();
     const {userPrompt, setUserPrompt} = useState("");
-    const {RexReply, setRexReply} = useState("");
+    const {ZarcoReply, setZarcoReply} = useState("");
     const {sessions, setSessions} = useState([]);
     const {thisSession, setThisSession} = useState({});
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -70,7 +70,7 @@ const handleSubmit = async (e) => {
         const year = date.getFullYear();
         const formattedDate = months[month] + " " + day + " " + year;
         callOpenAIAPI();
-        thisSession.chats.push({user: userPrompt, ReX: RexReply});
+        thisSession.chats.push({user: userPrompt, Zarco: ZarcoReply});
         updatedSession = {
             id: id,
             date, formattedDate,
@@ -107,20 +107,20 @@ async function callOpenAIAPI() {
         model: "gpt-3.5-turbo",
         max_tokens: 100,
     });
-    setRexReply(completion.data.choices[0].message.content);
+    setZarcoReply(completion.data.choices[0].message.content);
 }
 
 return (
     <Grid container style={{ display: matches ? "none" : "block" }}>
         <Grid style={{ padding: "40px 24px 24px 24px", position: "sticky" }}>
-            <img src={Images.homeRex} alt="Rex" style={{ width: "105px" }}/>
+            <img src={Images.homeZarco} alt="Zarco" style={{ width: "105px" }}/>
         </Grid>
         <Grid {...ChatStyles.textDisplayBackground}>
             <Grid>
                 {thisSession?.chats?.length ? thisSession.chats.map((chat, i) =>
                     Object.keys(chat).map((k) =>
-                        k === "Rex" ? (
-                            <RexMessage RexMessage={chat.ReX} key={'rex' + i}/>
+                        k === "Zarco" ? (
+                            <ZarcoMessage ZarcoMessage={chat.Zarco} key={'Zarco' + i}/>
                         ) : (
                             <UserMessage userMessage={chat.user} key={'user' + i}/>
                         )
